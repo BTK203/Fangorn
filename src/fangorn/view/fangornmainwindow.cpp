@@ -1,4 +1,4 @@
-#include "fangornmainwindow.h"
+#include "fangorn/view/fangornmainwindow.h"
 #include "./ui_fangornmainwindow.h"
 
 FangornMainWindow::FangornMainWindow(QWidget *parent)

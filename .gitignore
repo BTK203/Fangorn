@@ -72,5 +72,7 @@ Thumbs.db
 *.exe
 
 # Build and .vscode directories
+build
+.vscode
 */.vscode
 */build
