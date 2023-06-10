@@ -39,15 +39,16 @@ file(GLOB view_uis src/fangorn/view/*.ui)
 file(GLOB view_includes include/fangorn/view/*.h)
 file(GLOB control_sources src/fangorn/control/*.cpp)
 file(GLOB component_sources src/fangorn/components/*.cpp)
+file(GLOB util_sources src/fangorn/util/*.cpp)
 
 set(PROJECT_SOURCES
     src/fangorn/fangorn.cpp
-    src/fangorn/util.cpp
     ${view_sources}
     ${view_uis}
     ${view_includes}
     ${control_sources}
     ${component_sources}
+    ${util_sources}
 )
 
 #
