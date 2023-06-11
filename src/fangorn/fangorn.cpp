@@ -1,5 +1,4 @@
-#include "fangorn/fangornutils.hpp"
-#include "fangorn/fangornlogging.hpp"
+#include "fangorn/fangorncommon.hpp"
 #include "fangorn/view/fangornmainwindow.h"
 #include <unistd.h>
 #include <QApplication>

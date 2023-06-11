@@ -9,6 +9,7 @@
 //
 #include <stdio.h>
 #include <chrono>
+#include <list>
 #include <behaviortree_cpp/action_node.h>
 
 //
@@ -21,6 +22,16 @@ enum FangornLogLevel {
     ERROR,
     FATAL
 };
+
+
+//macro to define shared pointer types
+#define DEF_SHARED_PTR_TYPES(t) \
+    typedef std::shared_ptr<t> SharedPtr; \
+    typedef std::shared_ptr<const t> ConstSharedPtr; \
+    typedef std::unique_ptr<t> UniquePtr; \
+    typedef std::unique_ptr<const t> ConstUniquePtr; \
+    typedef std::weak_ptr<t> WeakPtr; \
+    typedef std::weak_ptr<const t> ConstWeakPtr
 
 
 //

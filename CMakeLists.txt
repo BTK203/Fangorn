@@ -15,11 +15,11 @@ set(buildBtManually true)
 if(buildBtManually)
     find_package(BehaviorTree QUIET)
     if(NOT BehaviorTree_FOUND)
-        message("No BehaviorTree.CPP found on system. It will build manually.")
+        message(STATUS "No BehaviorTree.CPP found on system. It will build manually.")
         add_subdirectory(btcpp)
         set(fangorn_include_dirs ${fangorn_include_dirs} btcpp/include)
     else()
-        message("BehaviorTree.CPP found on system.")
+        message(STATUS "BehaviorTree.CPP found on system.")
     endif()
 endif()
 
@@ -31,8 +31,8 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets Xml REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Xml REQUIRED)
 
 file(GLOB view_sources src/fangorn/view/*.cpp)
 file(GLOB view_uis src/fangorn/view/*.ui)
@@ -67,13 +67,18 @@ target_include_directories(fangorn_lib PUBLIC
 #
 # link widgets to library
 #
-target_link_libraries(fangorn_lib PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(fangorn_lib PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Xml)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Fangorn
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )
+
+#
+# FANGORN EXECUTABLE
+#
+
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Fangorn APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
@@ -96,3 +101,23 @@ set_target_properties(Fangorn PROPERTIES
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(Fangorn)
 endif()
+
+#
+# TESTING EXECUTABLE
+#
+if(FANGRON_ENABLE_TESTS)
+    message(STATUS "Fangorn tests are enabled.")
+    find_package(GTest REQUIRED)
+    file(GLOB component_tests test/fangorn/components/*.cpp)
+    file(GLOB control_tests test/fangorn/control/*.cpp)
+    file(GLOB util_tests test/fangorn/util/*.cpp)
+
+    add_executable(FangornRunTests
+        ${component_tests}
+        ${control_tests}
+        ${util_tests}
+        test/fangorn/FangornRunTests.cpp)
+    
+    target_link_libraries(FangornRunTests fangorn_lib GTest::gtest)
+endif()
+
