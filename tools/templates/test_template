@@ -1,0 +1,8 @@
+#include <gtest/gtest.h>
+
+TEST_F(<1>_test, test_<1>_something) {
+    //TODO: define a test here and delete below line when you do
+    GTEST_SKIP();
+}
+
+//TODO: define more tests here

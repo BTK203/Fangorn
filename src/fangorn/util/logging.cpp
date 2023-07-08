@@ -10,13 +10,15 @@ TestLabelFunc testLblFunc;
 bool testLblFuncInitialized = false;
 
 
-void __fangornLogMsgClear(void) {
+void __fangornLogMsgClear(void)
+{
     memset(msgBuf, 0, sizeof(msgBuf));
     memset(auxBuf, 0, sizeof(auxBuf));
 }
 
 
-void __fangornLogMsgAppend(const char *fmt, ...) {
+void __fangornLogMsgAppend(const char *fmt, ...)
+{
     va_list va;
     va_start(va, fmt);
     vsprintf(auxBuf, fmt, va);
@@ -25,14 +27,16 @@ void __fangornLogMsgAppend(const char *fmt, ...) {
 }
 
 
-const char *__fangornLogMsg(void) {
+const char *__fangornLogMsg(void)
+{
     return msgBuf;
 }
 
 
 #if FANGORN_FEATURE_TEST_LABEL == FEATURE_ENABLE
 
-void __fangornRegisterTestLabelFunc(TestLabelFunc func) {
+void __fangornRegisterTestLabelFunc(TestLabelFunc func)
+{
     if(testLblFuncInitialized) {
         FANGORN_ERROR("Test Label Function already initialized! Cannot initialize it twice.");
         return;
@@ -42,7 +46,8 @@ void __fangornRegisterTestLabelFunc(TestLabelFunc func) {
 }
 
 
-void __fangornSetTestLabel(const char *fmt, ...) {
+void __fangornSetTestLabel(const char *fmt, ...)
+{
     va_list args;
     va_start(args, fmt);
     vsprintf(msgBuf, fmt, args);

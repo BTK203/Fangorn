@@ -18,14 +18,16 @@ FangornMainWindow::FangornMainWindow(QWidget *parent)
 }
 
 
-FangornMainWindow::~FangornMainWindow() {
+FangornMainWindow::~FangornMainWindow()
+{
     delete ui;
 }
 
 
 #if FANGORN_FEATURE_TEST_LABEL == FEATURE_ENABLE
 
-void FangornMainWindow::setTestLabelText(const std::string& text) {
+void FangornMainWindow::setTestLabelText(const std::string& text)
+{
     ui->testLabel->setText(QString::fromStdString(text));
 }
 

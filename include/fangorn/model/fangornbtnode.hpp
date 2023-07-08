@@ -9,6 +9,20 @@ struct FangornBTNodeModel {
     BT::PortsList ports;
 };
 
+enum FangornPreconditionType {
+    PRECOND_SKIP_IF,
+    PRECOND_FAIL_IF,
+    PRECOND_SUCCESS_IF,
+    PRECOND_WHILE
+};
+
+enum FangornPostconditionType {
+    POSTCOND_ON_SUCCESS,
+    POSTCOND_ON_FAIL,
+    POSTCOND_POST,
+    POSTCOND_ON_HALTED
+};
+
 class FangornBTNode : public std::enable_shared_from_this<FangornBTNode> {
     public:
     DEF_SHARED_PTR_TYPES(FangornBTNode);
@@ -39,6 +53,16 @@ class FangornBTNode : public std::enable_shared_from_this<FangornBTNode> {
     void addPort(const std::string& portName, const BT::PortInfo& port);
     BT::PortsList getPortsList() const;
 
+    //precondition management
+    const std::string getPrecondition(FangornPreconditionType type);
+    void setPrecondition(FangornPreconditionType type, const std::string& script);
+    void clearPrecondition(FangornPreconditionType type);
+
+    //postcondition management
+    const std::string getPostcondition(FangornPostconditionType type);
+    void setPostcondition(FangornPostconditionType type, const std::string& script);
+    void clearPostcondition(FangornPostconditionType type);
+
     //node management
     const long getId() const;
     const FangornBTNodeModel getNodeModel() const;
@@ -59,4 +83,7 @@ class FangornBTNode : public std::enable_shared_from_this<FangornBTNode> {
     FangornBTNodeModel model;
     std::string name;
     std::map<int, FangornBTNode::SharedPtr> children;
+    std::map<const std::string, std::string> portValues;
+    std::map<FangornPreconditionType, std::string> preconditions;
+    std::map<FangornPostconditionType, std::string> postconditions;
 };

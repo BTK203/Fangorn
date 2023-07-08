@@ -4,7 +4,8 @@
 #include <QApplication>
 
 
-int runFangorn(int argc, char **argv) {
+int runFangorn(int argc, char **argv)
+{
     #if FANGORN_FEATURE_TESTFLAG == FEATURE_ENABLE
         if(findInArgs(argc, argv, "--test") > -1) {
             usleep(100000);

@@ -28,7 +28,8 @@ FangornBTNode::FangornBTNode(const FangornBTNode::ConstSharedPtr root, const QDo
 }
 
 
-bool FangornBTNode::hasChildWithId(long id, long afterId) const {
+bool FangornBTNode::hasChildWithId(long id, long afterId) const
+{
     for(auto it = children.begin(); it != children.end(); it++) {
         if(it->first > afterId && it->second->id == id) {
             return true;
@@ -39,17 +40,20 @@ bool FangornBTNode::hasChildWithId(long id, long afterId) const {
 }
 
 
-bool FangornBTNode::hasChildWithId(long id) const {
+bool FangornBTNode::hasChildWithId(long id) const
+{
     return hasChildWithId(id, 0);
 }
 
 
-bool FangornBTNode::hasChild(const FangornBTNode::ConstSharedPtr child) const {
+bool FangornBTNode::hasChild(const FangornBTNode::ConstSharedPtr child) const
+{
     return hasChildWithId(child->id);
 }
 
 
-long FangornBTNode::findChildWithName(const std::string& name, long afterId) const {
+long FangornBTNode::findChildWithName(const std::string& name, long afterId) const
+{
     for(auto it = children.begin(); it != children.end(); it++) {
         if(it->first > afterId && it->second->getName() == name) {
             return it->first;
@@ -60,12 +64,14 @@ long FangornBTNode::findChildWithName(const std::string& name, long afterId) con
 }
 
 
-long FangornBTNode::findChildWithName(const std::string& name) const {
+long FangornBTNode::findChildWithName(const std::string& name) const
+{
     return findChildWithName(name, 0);
 }
 
 
-FangornBTNode::SharedPtr FangornBTNode::getChildById(long id) const {
+FangornBTNode::SharedPtr FangornBTNode::getChildById(long id) const
+{
     if(hasChildWithId(id)) {
         return children.at(id);
     }
@@ -76,7 +82,8 @@ FangornBTNode::SharedPtr FangornBTNode::getChildById(long id) const {
 }
 
 
-FangornBTNode::SharedPtr FangornBTNode::getChildByName(const std::string& name, long afterId) const {
+FangornBTNode::SharedPtr FangornBTNode::getChildByName(const std::string& name, long afterId) const
+{
     long id = findChildWithName(name, afterId);
     if(id > -1) {
         return children.at(id);
@@ -88,17 +95,20 @@ FangornBTNode::SharedPtr FangornBTNode::getChildByName(const std::string& name, 
 }
 
 
-FangornBTNode::SharedPtr FangornBTNode::getChildByName(const std::string& name, const FangornBTNode::ConstSharedPtr afterChild) const {
+FangornBTNode::SharedPtr FangornBTNode::getChildByName(const std::string& name, const FangornBTNode::ConstSharedPtr afterChild) const
+{
     return getChildByName(name, afterChild->getId());
 }
 
 
-FangornBTNode::SharedPtr FangornBTNode::getChildByName(const std::string& name) const {
+FangornBTNode::SharedPtr FangornBTNode::getChildByName(const std::string& name) const
+{
     return getChildByName(name, 0);
 }
 
 
-FangornBTNode::SharedPtr FangornBTNode::eraseChild(long id) {
+FangornBTNode::SharedPtr FangornBTNode::eraseChild(long id)
+{
     FangornBTNode::SharedPtr node = getChildById(id);
     if(hasChildWithId(id)) {
         children.erase(id);
@@ -108,12 +118,14 @@ FangornBTNode::SharedPtr FangornBTNode::eraseChild(long id) {
 }
 
 
-void FangornBTNode::addChild(const FangornBTNode::SharedPtr child) {
+void FangornBTNode::addChild(const FangornBTNode::SharedPtr child)
+{
     children.insert( {child->getId(), child} );
 }
 
 
-std::list<long> FangornBTNode::getChildIds() const {
+std::list<long> FangornBTNode::getChildIds() const
+{
     std::list<long> ids;
     for(auto it = children.begin(); it != children.end(); it++) {
         ids.push_back(it->first);
@@ -123,12 +135,14 @@ std::list<long> FangornBTNode::getChildIds() const {
 }
 
 
-bool FangornBTNode::hasPortByName(const std::string& name) const {
+bool FangornBTNode::hasPortByName(const std::string& name) const
+{
     return model.ports.find(name) != model.ports.end();
 }
 
 
-void FangornBTNode::getPortByName(const std::string& name, BT::PortInfo& port) const {
+void FangornBTNode::getPortByName(const std::string& name, BT::PortInfo& port) const
+{
     if(hasPortByName(name)) {
         port = model.ports.at(name);
     }
@@ -138,7 +152,8 @@ void FangornBTNode::getPortByName(const std::string& name, BT::PortInfo& port) c
 }
 
 
-void FangornBTNode::erasePortByName(const std::string& name) {
+void FangornBTNode::erasePortByName(const std::string& name)
+{
     if(hasPortByName(name)) {
         model.ports.erase(name);
     } else {
@@ -148,42 +163,86 @@ void FangornBTNode::erasePortByName(const std::string& name) {
 }
 
 
-void FangornBTNode::addPort(const std::string& name, const BT::PortInfo& port) {
+void FangornBTNode::addPort(const std::string& name, const BT::PortInfo& port)
+{
     model.ports.insert( {name, port} );
 }
 
 
-BT::PortsList FangornBTNode::getPortsList() const {
+BT::PortsList FangornBTNode::getPortsList() const
+{
     return model.ports;
 }
 
 
-const long FangornBTNode::getId() const {
+const std::string FangornBTNode::getPrecondition(FangornPreconditionType type)
+{
+    return preconditions[type];
+}
+
+
+void FangornBTNode::setPrecondition(FangornPreconditionType type, const std::string& script)
+{
+    preconditions[type] = script;
+}
+
+
+void FangornBTNode::clearPrecondition(FangornPreconditionType type)
+{
+    setPrecondition(type, "");
+}
+
+
+const std::string FangornBTNode::getPostcondition(FangornPostconditionType type)
+{
+    return postconditions[type];
+}
+
+
+void FangornBTNode::setPostcondition(FangornPostconditionType type, const std::string& script)
+{
+    postconditions[type] = script;
+}
+
+
+void FangornBTNode::clearPostcondition(FangornPostconditionType type)
+{
+    setPostcondition(type, "");
+}
+
+
+const long FangornBTNode::getId() const
+{
     return id;
 }
 
 
-const FangornBTNodeModel FangornBTNode::getNodeModel() const {
+const FangornBTNodeModel FangornBTNode::getNodeModel() const
+{
     return model;
 }
 
 
-const std::string FangornBTNode::getName() const {
+const std::string FangornBTNode::getName() const
+{
     return name;
 }
 
 
-const FangornBTNode::ConstSharedPtr FangornBTNode::getRootNodeContainingThis() const {
+const FangornBTNode::ConstSharedPtr FangornBTNode::getRootNodeContainingThis() const
+{
     return root;
 }
 
 
-void FangornBTNode::setName(const std::string& name) {
+void FangornBTNode::setName(const std::string& name)
+{
     this->name = name;
 }
 
 
-bool FangornBTNode::hasNodeInSubtree(const FangornBTNode::ConstSharedPtr n) const {
+bool FangornBTNode::hasNodeInSubtree(const FangornBTNode::ConstSharedPtr n) const
+{
     bool hasNode = n->getId() == getId();
     for(auto it = children.begin(); it != children.end(); it++) {
         if(hasNode) {
@@ -197,7 +256,8 @@ bool FangornBTNode::hasNodeInSubtree(const FangornBTNode::ConstSharedPtr n) cons
 }
 
 
-std::vector<FangornBTNode::ConstSharedPtr> FangornBTNode::getPathToNode(const FangornBTNode::ConstSharedPtr node) const {
+std::vector<FangornBTNode::ConstSharedPtr> FangornBTNode::getPathToNode(const FangornBTNode::ConstSharedPtr node) const
+{
     for(auto it = children.begin(); it != children.end(); it++) {
         if(it->second->hasNodeInSubtree(node)) {
             std::vector<FangornBTNode::ConstSharedPtr> path = it->second->getPathToNode(node);

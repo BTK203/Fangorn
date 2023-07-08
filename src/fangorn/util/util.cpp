@@ -2,7 +2,8 @@
 #include <string.h>
 
 
-int findInArgs(int argc, char **argv, const char *arg) {
+int findInArgs(int argc, char **argv, const char *arg)
+{
     for(int i = 0; i < argc; i++) {
         if(strcmp(argv[i], arg) == 0) {
             return i;
@@ -13,7 +14,8 @@ int findInArgs(int argc, char **argv, const char *arg) {
 }
 
 
-std::string nodePathToString(std::vector<FangornBTNode::ConstSharedPtr> path) {
+std::string nodePathToString(std::vector<FangornBTNode::ConstSharedPtr> path)
+{
     std::string str = "";
 
     if(path.size() > 0) {
