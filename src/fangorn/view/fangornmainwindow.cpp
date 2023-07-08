@@ -6,6 +6,11 @@ FangornMainWindow::FangornMainWindow(QWidget *parent)
     , ui(new Ui::FangornMainWindow)
 {
     ui->setupUi(this);
+
+    //initialize defaults
+    #if FANGORN_FEATURE_TEST_LABEL == FEATURE_ENABLE
+
+    #endif
 }
 
 FangornMainWindow::~FangornMainWindow()

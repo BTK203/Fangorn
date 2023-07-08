@@ -122,6 +122,8 @@ static const std::chrono::time_point __fangornStartTime = std::chrono::system_cl
 #define FANGORN_ERROR(...) __FANGORN_LOG(__ERROR_LOGGER, FangornLogLevel::ERROR, __ERROR_COLORS, __ERROR_PREFIXES, __VA_ARGS__)
 #define FANGORN_FATAL(...) __FANGORN_LOG(__FATAL_LOGGER, FangornLogLevel::FATAL, __FATAL_COLORS, __FATAL_PREFIXES, __VA_ARGS__)
 
+
+
 void __fangornLogMsgClear(void);
 void __fangornLogMsgAppend(const char *fmt, ...);
 const char *__fangornLogMsg(void);

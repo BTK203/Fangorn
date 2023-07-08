@@ -2,6 +2,7 @@
 #define FANGORNMAINWINDOW_H
 
 #include <QMainWindow>
+#include "fangorn/fangornbase.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class FangornMainWindow; }

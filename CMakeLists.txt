@@ -11,21 +11,22 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #-------------------
 # Configure BT.CPP
 #-------------------
-set(buildBtManually true)
+set(buildBtManually true) #TODO evaluate this based on presence of ros2 btcpp pkg
 if(buildBtManually)
-    find_package(BehaviorTree QUIET)
-    if(NOT BehaviorTree_FOUND)
-        message(STATUS "No BehaviorTree.CPP found on system. It will build manually.")
-        add_subdirectory(btcpp)
-        set(fangorn_include_dirs ${fangorn_include_dirs} btcpp/include)
-    else()
-        message(STATUS "BehaviorTree.CPP found on system.")
-    endif()
+    message(STATUS "No BehaviorTree.CPP found on system. It will build manually.")
+    add_subdirectory(btcpp)
+    set(fangorn_include_dirs ${fangorn_include_dirs} btcpp/include)
 endif()
 
-# --------------------
+#-----------------------
+# Configure node editor
+#-----------------------
+add_subdirectory(nodeeditor)
+set(fangorn_include_dirs ${fangorn_include_dirs} nodeeditor/include)
+
+#--------------------
 # Configure Fangorn
-# --------------------
+#--------------------
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -90,7 +91,7 @@ else()
 endif()
 
 #link library to executable
-target_link_libraries(Fangorn PUBLIC fangorn_lib behaviortree_cpp)
+target_link_libraries(Fangorn PUBLIC fangorn_lib behaviortree_cpp QtNodes)
 
 set_target_properties(Fangorn PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
@@ -101,6 +102,10 @@ set_target_properties(Fangorn PROPERTIES
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(Fangorn)
 endif()
+
+file(GLOB icon_files src/fangorn/view/icons/*.svg)
+file(COPY ${icon_files}
+    DESTINATION icons)
 
 #
 # TESTING EXECUTABLE
