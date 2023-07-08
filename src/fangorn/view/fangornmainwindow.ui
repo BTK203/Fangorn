@@ -488,7 +488,7 @@
   <property name="windowTitle">
    <string>FangornMainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget">
+  <widget class="QWidget" name="centralWidget">
    <property name="palette">
     <palette>
      <active>
@@ -963,14 +963,20 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
-     <widget class="QSplitter" name="splitter_2">
+     <widget class="QSplitter" name="centralSplitter">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QWidget" name="layoutWidget">
-       <layout class="QVBoxLayout" name="verticalLayout">
+      <widget class="QFrame" name="frame">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <layout class="QVBoxLayout" name="forestPane">
         <item>
-         <widget class="QFrame" name="frame">
+         <widget class="QFrame" name="headerFrame">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -998,6 +1004,9 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="toolTip">
+              <string>Load Directory...</string>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -1020,6 +1029,9 @@
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>Load File...</string>
              </property>
              <property name="text">
               <string/>
@@ -1044,6 +1056,9 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="toolTip">
+              <string>Save File...</string>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -1056,6 +1071,13 @@
                <width>32</width>
                <height>32</height>
               </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="testLabel">
+             <property name="text">
+              <string>Test Label</string>
              </property>
             </widget>
            </item>
@@ -1076,22 +1098,29 @@
          </widget>
         </item>
         <item>
-         <widget class="QSplitter" name="splitter">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+         <widget class="QTreeWidget" name="forestWidget">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
-          <widget class="QTreeWidget" name="forestWidget">
-           <column>
-            <property name="text">
-             <string>Directory</string>
-            </property>
-           </column>
-          </widget>
+          <column>
+           <property name="text">
+            <string>Forest</string>
+           </property>
+          </column>
          </widget>
         </item>
        </layout>
       </widget>
       <widget class="QTabWidget" name="tabWidget">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>3</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="currentIndex">
         <number>0</number>
        </property>

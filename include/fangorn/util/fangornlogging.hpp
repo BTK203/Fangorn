@@ -122,8 +122,21 @@ static const std::chrono::time_point __fangornStartTime = std::chrono::system_cl
 #define FANGORN_ERROR(...) __FANGORN_LOG(__ERROR_LOGGER, FangornLogLevel::ERROR, __ERROR_COLORS, __ERROR_PREFIXES, __VA_ARGS__)
 #define FANGORN_FATAL(...) __FANGORN_LOG(__FATAL_LOGGER, FangornLogLevel::FATAL, __FATAL_COLORS, __FATAL_PREFIXES, __VA_ARGS__)
 
+#if FANGORN_FEATURE_TEST_LABEL == FEATURE_ENABLE
+    #define FANGORN_SET_TEST_LABEL(...) __fangornSetTestLabel(__VA_ARGS__)
+#else
+    #define FANGORN_SET_TEST_LABEL(...)
+#endif
 
+typedef std::function<void(const std::string&)> TestLabelFunc;
 
 void __fangornLogMsgClear(void);
 void __fangornLogMsgAppend(const char *fmt, ...);
 const char *__fangornLogMsg(void);
+
+#if FANGORN_FEATURE_TEST_LABEL == FEATURE_ENABLE
+
+void __fangornRegisterTestLabelFunc(TestLabelFunc func);
+void __fangornSetTestLabel(const char *fmt, ...);
+
+#endif

@@ -1,5 +1,5 @@
 #include "fangorn/fangorncommon.hpp"
-#include "fangorn/fangorncomponents.hpp"
+#include "fangorn/model/fangornbtnode.hpp"
 
 //
 // Source file for the FangornBTNode class

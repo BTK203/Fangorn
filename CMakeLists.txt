@@ -39,7 +39,7 @@ file(GLOB view_sources src/fangorn/view/*.cpp)
 file(GLOB view_uis src/fangorn/view/*.ui)
 file(GLOB view_includes include/fangorn/view/*.h)
 file(GLOB control_sources src/fangorn/control/*.cpp)
-file(GLOB component_sources src/fangorn/components/*.cpp)
+file(GLOB model_sources src/fangorn/model/*.cpp)
 file(GLOB util_sources src/fangorn/util/*.cpp)
 
 set(PROJECT_SOURCES
@@ -48,7 +48,7 @@ set(PROJECT_SOURCES
     ${view_uis}
     ${view_includes}
     ${control_sources}
-    ${component_sources}
+    ${model_sources}
     ${util_sources}
 )
 
@@ -113,7 +113,7 @@ file(COPY ${icon_files}
 if(FANGRON_ENABLE_TESTS)
     message(STATUS "Fangorn tests are enabled.")
     find_package(GTest REQUIRED)
-    file(GLOB component_tests test/fangorn/components/*.cpp)
+    file(GLOB model_tests test/fangorn/models/*.cpp)
     file(GLOB control_tests test/fangorn/control/*.cpp)
     file(GLOB util_tests test/fangorn/util/*.cpp)
 

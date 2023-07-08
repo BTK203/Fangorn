@@ -1,3 +1,3 @@
 #pragma once
-#include "fangorn/fangornlogging.hpp"
-#include "fangorn/fangornutils.hpp"
+#include "fangorn/util/fangornlogging.hpp"
+#include "fangorn/util/fangornutils.hpp"

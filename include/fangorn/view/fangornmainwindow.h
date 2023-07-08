@@ -2,7 +2,7 @@
 #define FANGORNMAINWINDOW_H
 
 #include <QMainWindow>
-#include "fangorn/fangornbase.hpp"
+#include "fangorn/fangorncommon.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class FangornMainWindow; }
@@ -15,6 +15,10 @@ class FangornMainWindow : public QMainWindow
 public:
     FangornMainWindow(QWidget *parent = nullptr);
     ~FangornMainWindow();
+
+    #if FANGORN_FEATURE_TEST_LABEL == FEATURE_ENABLE
+    void setTestLabelText(const std::string& text);
+    #endif
 
 private:
     Ui::FangornMainWindow *ui;
