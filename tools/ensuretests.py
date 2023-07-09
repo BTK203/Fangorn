@@ -49,11 +49,13 @@ def createFileFromTemplate(templatePath: str, targetPath: str, args: 'list[str]'
 
 #subtracts src from dst and returns dst
 def subtractLists(dst: 'list[str]', src: 'list[str]'):
-    for srcItem in src:
-        if srcItem in dst:
-            dst.remove(srcItem)
+    cDst = dst.copy()
+    cSrc = src.copy()
+    for srcItem in cSrc:
+        if srcItem in cDst:
+            cDst.remove(srcItem)
     
-    return dst
+    return cDst
 
 
 def resolveClassNames(filenames: 'list[str]'):
@@ -85,8 +87,8 @@ def ensureTestsForCategory(projectRoot: str, category: str):
     print(f"Unique sources: {uniqueSrcNames}")
     print(f"Unique tests: {uniqueTestNames}")
     
-    testTemplateFile = os.path.join(__file__, "templates", "test_template")
-    emptyTemplateFile = os.path.join(__file__, "templates", "empty_file")
+    testTemplateFile = os.path.join(projectRoot, "tools", "templates", "test_template")
+    emptyTemplateFile = os.path.join(projectRoot, "tools", "templates", "empty_file")
     
     for name in uniqueSrcNames:
         resp = prompt(
