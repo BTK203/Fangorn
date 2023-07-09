@@ -15,13 +15,16 @@ enum FangornForestItemType {
 class FangornForestItem {
     public:
     DEF_SHARED_PTR_TYPES(FangornForestItem);
-    FangornForestItem(const std::string& documentName, FangornForestItemType type);
+    FangornForestItem(const std::string& path, FangornForestItemType type);
     
-    const FangornForestItemType itemType() const;
+    const FangornForestItemType getItemType() const;
+    const std::string getPath() const;
+    const std::string getDisplayName() const;
+    virtual void changePath(const std::string& newPath);
 
     private:
     const FangornForestItemType type;
-    std::string documentName;
+    std::string path;
 };
 
 

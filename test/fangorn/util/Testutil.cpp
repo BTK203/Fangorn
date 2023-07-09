@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-TEST(<1>_test, test_<1>_something) {
+TEST(util_test, test_util_something) {
     //TODO: define a test here and delete below line when you do
     GTEST_SKIP();
 }

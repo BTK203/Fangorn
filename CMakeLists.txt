@@ -68,7 +68,7 @@ target_include_directories(fangorn_lib PUBLIC
 #
 # link widgets to library
 #
-target_link_libraries(fangorn_lib PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Xml)
+target_link_libraries(fangorn_lib PUBLIC Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Xml)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Fangorn
@@ -113,16 +113,16 @@ file(COPY ${icon_files}
 if(FANGRON_ENABLE_TESTS)
     message(STATUS "Fangorn tests are enabled.")
     find_package(GTest REQUIRED)
-    file(GLOB model_tests test/fangorn/models/*.cpp)
+    file(GLOB model_tests test/fangorn/model/*.cpp)
     file(GLOB control_tests test/fangorn/control/*.cpp)
     file(GLOB util_tests test/fangorn/util/*.cpp)
 
     add_executable(FangornRunTests
-        ${component_tests}
+        ${model_tests}
         ${control_tests}
         ${util_tests}
         test/fangorn/FangornRunTests.cpp)
     
-    target_link_libraries(FangornRunTests fangorn_lib GTest::gtest)
+    target_link_libraries(FangornRunTests PUBLIC fangorn_lib GTest::gtest)
 endif()
 

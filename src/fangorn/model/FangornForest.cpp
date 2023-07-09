@@ -4,6 +4,8 @@
 void FangornForest::loadFromDirectory(const std::string& directory)
 {
     currentDirectory = directory;
+
+    //TODO: LOAD THE DIRECTORY
 }
 
 

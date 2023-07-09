@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root BTCPP_format="4"
+      main_tree_to_execute="doc1tree1">
+  <include path="doc2.xml"/>
+  <BehaviorTree ID="doc1tree1">
+    <Sequence>
+      <action1/>
+      <Sequence>
+        <Action2 val="4" name="act2"/>
+      </Sequence>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="doc1tree2">
+    <Action ID="action1"/>
+  </BehaviorTree>
+
+  <!-- Description of Node Models (used by Groot) -->
+  <TreeNodesModel>
+    <Action ID="action1"
+            editable="true"/>
+    <Action ID="action2"
+            editable="true">
+      <input_port name="val"/>
+    </Action>
+    <Action ID="action3"
+            editable="true">
+      <input_port name="val"/>
+      <output_port name="out"/>
+    </Action>
+  </TreeNodesModel>
+
+</root>
