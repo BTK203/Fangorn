@@ -25,7 +25,7 @@ enum FangornLogLevel {
 
 
 //macro to define shared pointer types
-#define DEF_SHARED_PTR_TYPES(t) \
+#define DEF_SMART_PTR_TYPES(t) \
     typedef std::shared_ptr<t> SharedPtr; \
     typedef std::shared_ptr<const t> ConstSharedPtr; \
     typedef std::unique_ptr<t> UniquePtr; \

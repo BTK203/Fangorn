@@ -14,7 +14,7 @@ enum FangornForestItemType {
 
 class FangornForestItem {
     public:
-    DEF_SHARED_PTR_TYPES(FangornForestItem);
+    DEF_SMART_PTR_TYPES(FangornForestItem);
     FangornForestItem(const std::string& path, FangornForestItemType type);
     
     const FangornForestItemType getItemType() const;
@@ -30,7 +30,7 @@ class FangornForestItem {
 
 class FangornForest : public FangornForestItem {
     public:
-    DEF_SHARED_PTR_TYPES(FangornForest);
+    DEF_SMART_PTR_TYPES(FangornForest);
 
     //loading
     void loadFromDirectory(const std::string& directory);

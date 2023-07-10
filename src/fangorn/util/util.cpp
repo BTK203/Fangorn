@@ -1,5 +1,7 @@
 #include "fangorn/util/fangornutils.hpp"
+#include "fangorn/util/fangornlogging.hpp"
 #include <string.h>
+#include <QFile>
 
 
 int findInArgs(int argc, char **argv, const char *arg)
@@ -26,4 +28,18 @@ std::string nodePathToString(std::vector<FangornBtNode::ConstSharedPtr> path)
     }
 
     return str;
+}
+
+
+QString fileToString(const QString& path)
+{
+    QFile f(path);
+    if(f.exists())
+    {
+        f.open(QIODevice::ReadOnly);
+        return f.readAll();
+    }
+
+    FANGORN_WARN("File %s requested but doesnt exist!");
+    return "";
 }

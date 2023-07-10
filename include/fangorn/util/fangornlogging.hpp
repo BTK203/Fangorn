@@ -20,12 +20,13 @@ static const std::chrono::time_point __fangornStartTime = std::chrono::system_cl
 //
 // LOGGING MACROS
 //
-#define COLOR_DEBUG_NUM 4
-#define COLOR_INFO_NUM  7
-#define COLOR_WARN_NUM  3
-#define COLOR_ERROR_NUM 1
-#define COLOR_FAULT_NUM 1
-#define COLOR_FATAL_NUM 5
+#define COLOR_NORM_NUM   7
+#define COLOR_DEBUG_NUM  4
+#define COLOR_INFO_NUM   7
+#define COLOR_WARN_NUM   3
+#define COLOR_ERROR_NUM  1
+#define COLOR_FAULT_NUM  1
+#define COLOR_FATAL_NUM  5
 
 #define COLOR_BRIGHT 9
 #define COLOR_DARK   3
@@ -33,6 +34,7 @@ static const std::chrono::time_point __fangornStartTime = std::chrono::system_cl
 #define xstr(s) str(s)
 #define str(s) #s
 
+#define COLOR_TAG_NORM  "\033[1;" xstr(COLOR_DARK) xstr(COLOR_NORM_NUM) "m"
 #define COLOR_TAG_DEBUG "\033[1;" xstr(COLOR_DARK) xstr(COLOR_DEBUG_NUM) "m"
 #define COLOR_TAG_INFO  "\033[1;" xstr(COLOR_DARK) xstr(COLOR_INFO_NUM) "m"
 #define COLOR_TAG_WARN  "\033[1;" xstr(COLOR_DARK) xstr(COLOR_WARN_NUM) "m"
@@ -40,6 +42,7 @@ static const std::chrono::time_point __fangornStartTime = std::chrono::system_cl
 #define COLOR_TAG_FAULT "\033[1;38:5:166m"
 #define COLOR_TAG_FATAL "\033[1;" xstr(COLOR_DARK) xstr(COLOR_FATAL_NUM) "m"
 
+#define COLOR_MSG_NORM  "\033[0;" xstr(COLOR_BRIGHT) xstr(COLOR_NORM_NUM) "m"
 #define COLOR_MSG_DEBUG "\033[0;" xstr(COLOR_BRIGHT) xstr(COLOR_DEBUG_NUM) "m"
 #define COLOR_MSG_INFO  "\033[0;" xstr(COLOR_BRIGHT) xstr(COLOR_INFO_NUM) "m"
 #define COLOR_MSG_WARN  "\033[0;" xstr(COLOR_BRIGHT) xstr(COLOR_WARN_NUM) "m"
@@ -85,6 +88,7 @@ static const std::chrono::time_point __fangornStartTime = std::chrono::system_cl
             colors; \
             prefixes; \
             __FG_LOG_APPEND(__VA_ARGS__); \
+            __NORM_COLORS; \
             log(__fangornLogMsg()); \
         } \
     } while(0)
@@ -110,6 +114,7 @@ static const std::chrono::time_point __fangornStartTime = std::chrono::system_cl
     #define __FATAL_PREFIXES __FG_LOG_PRE_NAME; __FG_LOG_PRE_LOGLVL(FangornLogLevel::FATAL); __FG_LOG_PRE_FILE_LINE; __FG_LOG_PRE_TIME
 #endif
 
+#define __NORM_COLORS __FG_LOG_COLOR(COLOR_TAG_NORM); __FG_LOG_COLOR(COLOR_MSG_NORM)
 #define __DEBUG_COLORS __FG_LOG_COLOR(COLOR_TAG_DEBUG); __FG_LOG_COLOR(COLOR_MSG_DEBUG)
 #define __INFO_COLORS __FG_LOG_COLOR(COLOR_TAG_INFO); __FG_LOG_COLOR(COLOR_MSG_INFO)
 #define __WARN_COLORS __FG_LOG_COLOR(COLOR_TAG_WARN); __FG_LOG_COLOR(COLOR_MSG_WARN)

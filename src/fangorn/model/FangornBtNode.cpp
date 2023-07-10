@@ -25,27 +25,25 @@ static const std::string postconditionNames[4] = {
 
 unsigned long FangornBtNode::nextAvailableId = 0;
 
-btid_t FangornBtNode::nextAvailableNodeId()
+const btid_t FangornBtNode::nextAvailableNodeId()
 {
     return nextAvailableId++;
 }
 
 
-FangornBtNode::FangornBtNode(
-    const FangornBtNode::ConstSharedPtr root, 
+FangornBtNode::FangornBtNode (
     const std::string& registrationId, 
     const std::string& name,
-    Attributes attrs, 
+    Attributes attrs,
     Children children,
     Preconditions preconditions,
     Postconditions postconditions)
  : id(nextAvailableNodeId()),
-   root(root),
-   registrationId(registrationId),
    attrs(attrs),
    children(children)
 {
-    setAttributeValue("ID", name);
+    setRegistrationId(registrationId);
+    setName(name);
 
     for(auto pair : preconditions)
     {
@@ -59,53 +57,11 @@ FangornBtNode::FangornBtNode(
 }
 
 
-FangornBtNode::FangornBtNode(
-    const FangornBtNode::ConstSharedPtr root,
-    const std::string& registrationId,
-    const std::string& name,
-    Attributes attrs,
-    Children children)
- : id(nextAvailableNodeId()),
-   root(root),
-   registrationId(registrationId),
-   attrs(attrs),
-   children(children)
+FangornBtNode::FangornBtNode(const QDomElement& xml)
+: id(nextAvailableNodeId())
 {
-    setAttributeValue("ID", name);
-}
+    setRegistrationId(xml.attribute("ID").isNull() ? xml.nodeName().toStdString() : xml.attribute("ID").toStdString());
 
-
-FangornBtNode::FangornBtNode(
-    const FangornBtNode::ConstSharedPtr root,
-    const std::string& registrationId,
-    const std::string& name,
-    Attributes attrs)
- : id(nextAvailableNodeId()),
-   root(root),
-   registrationId(registrationId),
-   attrs(attrs)
-{
-    setAttributeValue("ID", name);
-}
-
-
-FangornBtNode::FangornBtNode(
-    const FangornBtNode::ConstSharedPtr root,
-    const std::string& registrationId,
-    const std::string& name)
- : id(nextAvailableNodeId()),
-   root(root),
-   registrationId(registrationId)
-{
-    setAttributeValue("ID", name);
-}
-
-
-FangornBtNode::FangornBtNode(const FangornBtNode::ConstSharedPtr root, const QDomElement& xml)
-: id(nextAvailableNodeId()),
-  root(root),
-  registrationId(xml.attribute("ID").isNull() ? xml.nodeValue().toStdString() : xml.attribute("ID").toStdString())
-{
     //read in all tag attributes
     QDomNamedNodeMap attributes = xml.attributes();
     for(int i = 0; i < attributes.length(); i++)
@@ -118,14 +74,14 @@ FangornBtNode::FangornBtNode(const FangornBtNode::ConstSharedPtr root, const QDo
         QDomElement nextChild = xml.firstChildElement();
         while(!nextChild.isNull())
         {
-            addChild(std::make_shared<FangornBtNode>(root, nextChild));
+            addChild(std::make_shared<FangornBtNode>(nextChild));
             nextChild = nextChild.nextSiblingElement();
         }
     }
 }
 
 
-bool FangornBtNode::hasChildWithId(btid_t id, long afterId) const
+bool FangornBtNode::hasChildWithId(btid_t id, btid_t afterId) const
 {
     for(auto it = children.begin(); it != children.end(); it++)
     {
@@ -139,19 +95,13 @@ bool FangornBtNode::hasChildWithId(btid_t id, long afterId) const
 }
 
 
-bool FangornBtNode::hasChildWithId(btid_t id) const
-{
-    return hasChildWithId(id, 0);
-}
-
-
 bool FangornBtNode::hasChild(const FangornBtNode::ConstSharedPtr child) const
 {
     return hasChildWithId(child->getId());
 }
 
 
-long FangornBtNode::findChildWithName(const std::string& name, long afterId) const
+long FangornBtNode::findChildWithName(const std::string& name, btid_t afterId) const
 {
     for(auto it = children.begin(); it != children.end(); it++)
     {
@@ -165,9 +115,9 @@ long FangornBtNode::findChildWithName(const std::string& name, long afterId) con
 }
 
 
-long FangornBtNode::findChildWithName(const std::string& name) const
+bool FangornBtNode::hasChildWithName(const std::string& name, btid_t afterId) const
 {
-    return findChildWithName(name, 0);
+    return findChildWithName(name, afterId) > -1;
 }
 
 
@@ -178,13 +128,11 @@ FangornBtNode::SharedPtr FangornBtNode::getChildById(btid_t id) const
         return children.at(id);
     }
 
-    std::string nodePath = nodePathToString(getRootNodeContainingThis()->getPathToNode(shared_from_this()));
-    FANGORN_WARN("Node %s does not have a child with id %s, but a request was made for one.", nodePath, id);
-    return nullptr;
+    throw std::invalid_argument(std::to_string(getId()) + " has no child with id " + std::to_string(id));
 }
 
 
-FangornBtNode::SharedPtr FangornBtNode::getChildByName(const std::string& name, long afterId) const
+FangornBtNode::SharedPtr FangornBtNode::getChildByName(const std::string& name, btid_t afterId) const
 {
     long id = findChildWithName(name, afterId);
     if(id > -1)
@@ -192,9 +140,7 @@ FangornBtNode::SharedPtr FangornBtNode::getChildByName(const std::string& name, 
         return children.at(id);
     }
 
-    std::string nodePath = nodePathToString(getRootNodeContainingThis()->getPathToNode(shared_from_this()));
-    FANGORN_WARN("Node %s does not have a child with name %s, after id %d, but a request was made for one.", nodePath, name, afterId);
-    return nullptr;
+    throw std::invalid_argument(std::to_string(getId()) + " has no child with name " + name + " after id " + std::to_string(afterId));
 }
 
 
@@ -204,21 +150,17 @@ FangornBtNode::SharedPtr FangornBtNode::getChildByName(const std::string& name, 
 }
 
 
-FangornBtNode::SharedPtr FangornBtNode::getChildByName(const std::string& name) const
+FangornBtNode::SharedPtr FangornBtNode::eraseChild(btid_t id)
 {
-    return getChildByName(name, 0);
+    FangornBtNode::SharedPtr node = getChildById(id); //will throw if id is not a child
+    children.erase(id);
+    return node;
 }
 
 
-FangornBtNode::SharedPtr FangornBtNode::eraseChild(btid_t id)
+FangornBtNode::SharedPtr FangornBtNode::eraseChild(FangornBtNode::ConstSharedPtr child)
 {
-    FangornBtNode::SharedPtr node = getChildById(id);
-    if(hasChildWithId(id))
-    {
-        children.erase(id);
-    }
-
-    return node;
+    return eraseChild(child->getId());
 }
 
 
@@ -228,15 +170,36 @@ void FangornBtNode::addChild(const FangornBtNode::SharedPtr child)
 }
 
 
-std::list<long> FangornBtNode::getChildIds() const
+std::list<btid_t> FangornBtNode::getChildIds() const
 {
-    std::list<long> ids;
+    std::list<btid_t> ids;
     for(auto it = children.begin(); it != children.end(); it++)
     {
         ids.push_back(it->first);
     }
 
     return ids;
+}
+
+
+std::list<std::string> FangornBtNode::getAttributeNames() const
+{
+    std::list<std::string> names;
+    for(auto pair : attrs)
+    {
+        if(pair.second.size() > 0)
+        {
+            names.push_back(pair.first);
+        }
+    }
+
+    return names;
+}
+
+
+void FangornBtNode::setAttributeValue(const std::string& name, const std::string& value)
+{
+    attrs[name] = value;
 }
 
 
@@ -254,12 +217,6 @@ std::string FangornBtNode::getAttributeValue(const std::string& name) const
     }
 
     return "";
-}
-
-
-void FangornBtNode::setAttributeValue(const std::string& name, const std::string& value)
-{
-    attrs[name] = value;
 }
 
 
@@ -299,7 +256,7 @@ void FangornBtNode::clearPostcondition(FangornPostconditionType type)
 }
 
 
-btid_t FangornBtNode::getId() const
+const btid_t FangornBtNode::getId() const
 {
     return id;
 }
@@ -307,25 +264,25 @@ btid_t FangornBtNode::getId() const
 
 std::string FangornBtNode::getName() const
 {
-    return getAttributeValue("ID");
+    return getAttributeValue("name");
 }
 
 
 const std::string FangornBtNode::getRegistrationId() const
 {
-    return registrationId;
-}
-
-
-const FangornBtNode::ConstSharedPtr FangornBtNode::getRootNodeContainingThis() const
-{
-    return root;
+    return getAttributeValue("ID");
 }
 
 
 void FangornBtNode::setName(const std::string& name)
 {
-    setAttributeValue("ID", name);
+    setAttributeValue("name", name);
+}
+
+
+void FangornBtNode::setRegistrationId(const std::string& id)
+{
+    setAttributeValue("ID", id);
 }
 
 
@@ -343,22 +300,4 @@ bool FangornBtNode::hasNodeInSubtree(const FangornBtNode::ConstSharedPtr n) cons
     }
 
     return hasNode;
-}
-
-
-std::vector<FangornBtNode::ConstSharedPtr> FangornBtNode::getPathToNode(const FangornBtNode::ConstSharedPtr node) const
-{
-    for(auto it = children.begin(); it != children.end(); it++)
-    {
-        if(it->second->hasNodeInSubtree(node))
-        {
-            std::vector<FangornBtNode::ConstSharedPtr> path = it->second->getPathToNode(node);
-            path.insert(path.begin(), shared_from_this());
-            return path;
-        }
-    }
-
-    std::vector<FangornBtNode::ConstSharedPtr> path;
-    path.push_back(shared_from_this());
-    return path;
 }

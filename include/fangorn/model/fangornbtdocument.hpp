@@ -12,7 +12,7 @@ struct FangornBTNodeModel {
 
 class FangornBtDocument : public FangornForestItem {
     public:
-    DEF_SHARED_PTR_TYPES(FangornBtDocument);
+    DEF_SMART_PTR_TYPES(FangornBtDocument);
     FangornBtDocument(const std::string& path);
 
     //document management

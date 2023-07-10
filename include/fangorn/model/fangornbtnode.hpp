@@ -3,7 +3,7 @@
 #include <QDomElement>
 #include "fangorn/fangornbase.hpp"
 
-typedef const unsigned long btid_t;
+typedef unsigned long btid_t;
 
 enum FangornPreconditionType {
     PRECOND_SKIP_IF,
@@ -22,61 +22,39 @@ enum FangornPostconditionType {
 
 class FangornBtNode : public std::enable_shared_from_this<FangornBtNode> {
     public:
-    DEF_SHARED_PTR_TYPES(FangornBtNode);
+    DEF_SMART_PTR_TYPES(FangornBtNode);
     typedef std::map<btid_t, FangornBtNode::SharedPtr> Children;
     typedef std::map<const std::string, std::string> Attributes;
     typedef std::map<FangornPreconditionType, std::string> Preconditions;
     typedef std::map<FangornPostconditionType, std::string> Postconditions;
 
     FangornBtNode(
-        const FangornBtNode::ConstSharedPtr root, 
         const std::string& registrationId, 
-        const std::string& name,
-        Attributes attrs, 
-        Children children,
-        Preconditions preconditions,
-        Postconditions postconditions);
-    
-    FangornBtNode(
-        const FangornBtNode::ConstSharedPtr root,
-        const std::string& registrationId,
-        const std::string& name,
-        Attributes attrs,
-        Children children);
-    
-    FangornBtNode(
-        const FangornBtNode::ConstSharedPtr root,
-        const std::string& registrationId,
-        const std::string& name,
-        Attributes attrs);
+        const std::string& name = "",
+        Attributes attrs = { },
+        Children children = { },
+        Preconditions preconditions = { },
+        Postconditions postconditions = { });
 
-    FangornBtNode(
-        const FangornBtNode::ConstSharedPtr root,
-        const std::string& registrationId,
-        const std::string& name);
-
-    FangornBtNode(const FangornBtNode::ConstSharedPtr root, const QDomElement& xml);
-    FangornBtNode(const QDomElement& xml)
-     : FangornBtNode(shared_from_this(), xml) { };
+    FangornBtNode(const QDomElement& xml);
 
     //child management
-    bool hasChildWithId(btid_t id, long afterId) const;
-    bool hasChildWithId(btid_t id) const;
+    bool hasChildWithId(btid_t id, btid_t afterId = 0) const;
     bool hasChild(const FangornBtNode::ConstSharedPtr child) const;
-    long findChildWithName(const std::string& name, long afterId) const;
-    long findChildWithName(const std::string& name) const;
+    long findChildWithName(const std::string& name, btid_t afterId = 0) const;
+    bool hasChildWithName(const std::string& name, btid_t afterId = 0) const;
     FangornBtNode::SharedPtr getChildById(btid_t id) const;
-    FangornBtNode::SharedPtr getChildByName(const std::string& name, long afterId) const;
+    FangornBtNode::SharedPtr getChildByName(const std::string& name, btid_t afterId = 0) const;
     FangornBtNode::SharedPtr getChildByName(const std::string& name, const FangornBtNode::ConstSharedPtr afterChild) const;
-    FangornBtNode::SharedPtr getChildByName(const std::string& name) const;
     FangornBtNode::SharedPtr eraseChild(btid_t id);
+    FangornBtNode::SharedPtr eraseChild(FangornBtNode::ConstSharedPtr child);
     void addChild(const FangornBtNode::SharedPtr child);
-    std::list<long> getChildIds() const;
-
+    std::list<btid_t> getChildIds() const;
     //port value management
+    std::list<std::string> getAttributeNames() const;
+    void setAttributeValue(const std::string& name, const std::string& value);
     bool hasAttributeWithName(const std::string& name) const;
     std::string getAttributeValue(const std::string& name) const;
-    void setAttributeValue(const std::string& name, const std::string& value);
 
     //precondition management
     std::string getPrecondition(FangornPreconditionType type);
@@ -89,25 +67,20 @@ class FangornBtNode : public std::enable_shared_from_this<FangornBtNode> {
     void clearPostcondition(FangornPostconditionType type);
 
     //node management
-    btid_t getId() const;
+    const btid_t getId() const;
     std::string getName() const;
     const std::string getRegistrationId() const;
-    const FangornBtNode::ConstSharedPtr getRootNodeContainingThis() const;
     void setName(const std::string& name);
-    
+    void setRegistrationId(const std::string& id);
+
     bool hasNodeInSubtree(const FangornBtNode::ConstSharedPtr decendent) const;
-    std::vector<FangornBtNode::ConstSharedPtr> getPathToNode(const FangornBtNode::ConstSharedPtr node) const;
 
     private:
-    static btid_t nextAvailableNodeId();
-    static unsigned long nextAvailableId;
+    static const btid_t nextAvailableNodeId();
+    static btid_t nextAvailableId;
    
     //unique id allows for easy comparison between other nodes in the tree with the same type and registration id
-    btid_t id; 
-    const std::string registrationId;
-
-    //storing root node allows for easy computation of path and location of other nodes
-    const FangornBtNode::ConstSharedPtr root;
+    const btid_t id; 
 
     Children children;
     Attributes attrs;

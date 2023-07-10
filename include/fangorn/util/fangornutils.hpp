@@ -5,3 +5,4 @@
 
 int findInArgs(int argc, char **argv, const char *arg);
 std::string nodePathToString(std::vector<FangornBtNode::ConstSharedPtr> path);
+QString fileToString(const QString& pathh);
