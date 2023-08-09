@@ -8,6 +8,13 @@
 #define ASSERT_BTNODE_CORRECT(node, rId, name, children, attrs, preconds, postconds) \
     FANGORN_DEBUG("Checking node " #node " for correctness"); checkBtNode(node, rId, name, children, attrs, preconds, postconds)
 #define ASSERT_BTNODES_EQ(actual, expected) FANGORN_DEBUG("Comparing experimental node " #actual " to expected node " #expected); checkBtNode(actual, expected)
+#define ASSERT_SETS_EQ(actual, expected, type) \
+    do { \
+        std::set<type> \
+            __actualSet(actual.get_allocator()), \
+            __expectedSet(expected.get_allocator()); \
+        ASSERT_EQ(__actualSet, __expectedSet); \
+    } while(false)
 
 void checkBtNode(
     FangornBtNode::SharedPtr node,
@@ -101,6 +108,20 @@ TEST(FangornBTNode_test, test_FangornBtNode_construct_empty) {
         { },
         { }
     );
+}
+
+
+void assertChildInSubtreeForSubtree(FangornBtNode::SharedPtr root, FangornBtNode::SharedPtr subtree)
+{
+    std::list<btid_t> childIds = subtree->getChildIds();
+    for(std::list<btid_t>::iterator it = childIds.begin(); 
+        it != childIds.end(); 
+        it++)
+    {
+        FangornBtNode::SharedPtr child = subtree->getChildById(*it);
+        ASSERT_TRUE(root->hasNodeInSubtree(child));
+        assertChildInSubtreeForSubtree(root, child);
+    }
 }
 
 
@@ -582,7 +603,7 @@ TEST(FangornBtNodeTest, test_FangornBtNode_getAttributeNames_withAttrs)
         attrs
     );
 
-    std::list<std::string> expectedAttrs = {
+    std::set<std::string> expectedAttrs = {
         "ID",
         "name",
         "attr1",
@@ -590,7 +611,7 @@ TEST(FangornBtNodeTest, test_FangornBtNode_getAttributeNames_withAttrs)
         "attr3"
     };
 
-    ASSERT_EQ(node->getAttributeNames(), expectedAttrs);
+    ASSERT_SETS_EQ(node->getAttributeNames(), expectedAttrs, std::string);
 }
 
 
@@ -605,10 +626,127 @@ TEST(FangornBtNodeTest, test_FangornBtNode_setAttributeValue_getAttributeValue)
             newName = "attr" + std::to_string(i),
             newvalue = "val" + std::to_string(i);
 
-        node->setAttributeValue(newName, "some_value");
+        node->setAttributeValue(newName, newvalue);
         expectedNames.push_back(newName);
-        ASSERT_EQ(node->getAttributeNames(), expectedNames);
+        ASSERT_SETS_EQ(node->getAttributeNames(), expectedNames, std::string);
         ASSERT_EQ(node->getAttributeValue(newName), newvalue);
         ASSERT_EQ(node->getAttributeValue("ID"), "node");
     }
+}
+
+
+TEST(FangornBtNodeTest, test_FangornBtNode_getPrecondition_setPrecondition_clearPrecondition)
+{
+    FangornBtNode::SharedPtr node = EMPTY_BTNODE("node", "");
+    ASSERT_EQ(node->getPrecondition(FangornPreconditionType::PRECOND_FAIL_IF), "");
+    ASSERT_EQ(node->getPrecondition(FangornPreconditionType::PRECOND_SKIP_IF), "");
+    ASSERT_EQ(node->getPrecondition(FangornPreconditionType::PRECOND_SUCCESS_IF), "");
+    ASSERT_EQ(node->getPrecondition(FangornPreconditionType::PRECOND_WHILE), "");
+
+    node->setPrecondition(FangornPreconditionType::PRECOND_FAIL_IF, "failureprecondition");
+    node->setPrecondition(FangornPreconditionType::PRECOND_SKIP_IF, "skipprecondition");
+    node->setPrecondition(FangornPreconditionType::PRECOND_SUCCESS_IF, "successprecondition");
+    node->setPrecondition(FangornPreconditionType::PRECOND_WHILE, "whileprecondition");
+
+    ASSERT_EQ(node->getPrecondition(FangornPreconditionType::PRECOND_FAIL_IF), "failureprecondition");
+    ASSERT_EQ(node->getPrecondition(FangornPreconditionType::PRECOND_SKIP_IF), "skipprecondition");
+    ASSERT_EQ(node->getPrecondition(FangornPreconditionType::PRECOND_SUCCESS_IF), "successprecondition");
+    ASSERT_EQ(node->getPrecondition(FangornPreconditionType::PRECOND_WHILE), "whileprecondition");
+
+    //test clearing just one thing
+    node->clearPrecondition(FangornPreconditionType::PRECOND_FAIL_IF);
+    ASSERT_EQ(node->getPrecondition(FangornPreconditionType::PRECOND_FAIL_IF), "");
+    ASSERT_EQ(node->getPrecondition(FangornPreconditionType::PRECOND_SKIP_IF), "skipprecondition");
+    ASSERT_EQ(node->getPrecondition(FangornPreconditionType::PRECOND_SUCCESS_IF), "successprecondition");
+    ASSERT_EQ(node->getPrecondition(FangornPreconditionType::PRECOND_WHILE), "whileprecondition");
+
+    //test clearing everything
+    node->clearPrecondition(FangornPreconditionType::PRECOND_FAIL_IF);
+    node->clearPrecondition(FangornPreconditionType::PRECOND_SKIP_IF);
+    node->clearPrecondition(FangornPreconditionType::PRECOND_SUCCESS_IF);
+    node->clearPrecondition(FangornPreconditionType::PRECOND_WHILE);
+
+    ASSERT_EQ(node->getPrecondition(FangornPreconditionType::PRECOND_FAIL_IF), "");
+    ASSERT_EQ(node->getPrecondition(FangornPreconditionType::PRECOND_SKIP_IF), "");
+    ASSERT_EQ(node->getPrecondition(FangornPreconditionType::PRECOND_SUCCESS_IF), "");
+    ASSERT_EQ(node->getPrecondition(FangornPreconditionType::PRECOND_WHILE), "");
+}
+
+
+TEST(FangornBtNodeTest, test_FangornBtNode_getPostcondition_setPostcondition_clearPostcondition)
+{
+    FangornBtNode::SharedPtr node = EMPTY_BTNODE("ndoe", "");
+    ASSERT_EQ(node->getPostcondition(FangornPostconditionType::POSTCOND_ON_FAIL), "");
+    ASSERT_EQ(node->getPostcondition(FangornPostconditionType::POSTCOND_ON_HALTED), "");
+    ASSERT_EQ(node->getPostcondition(FangornPostconditionType::POSTCOND_ON_SUCCESS), "");
+    ASSERT_EQ(node->getPostcondition(FangornPostconditionType::POSTCOND_POST), "");
+
+    node->setPostcondition(FangornPostconditionType::POSTCOND_ON_FAIL, "failpostcond");
+    node->setPostcondition(FangornPostconditionType::POSTCOND_ON_HALTED, "haltedpostcond");
+    node->setPostcondition(FangornPostconditionType::POSTCOND_ON_SUCCESS, "successpostcond");
+    node->setPostcondition(FangornPostconditionType::POSTCOND_POST, "postpostcond");
+
+    ASSERT_EQ(node->getPostcondition(FangornPostconditionType::POSTCOND_ON_FAIL), "failpostcond");
+    ASSERT_EQ(node->getPostcondition(FangornPostconditionType::POSTCOND_ON_HALTED), "haltedpostcond");
+    ASSERT_EQ(node->getPostcondition(FangornPostconditionType::POSTCOND_ON_SUCCESS), "successpostcond");
+    ASSERT_EQ(node->getPostcondition(FangornPostconditionType::POSTCOND_POST), "postpostcond");
+
+    //test clearing just one thing
+    node->clearPostcondition(FangornPostconditionType::POSTCOND_ON_FAIL);
+    ASSERT_EQ(node->getPostcondition(FangornPostconditionType::POSTCOND_ON_FAIL), "");
+    ASSERT_EQ(node->getPostcondition(FangornPostconditionType::POSTCOND_ON_HALTED), "haltedpostcond");
+    ASSERT_EQ(node->getPostcondition(FangornPostconditionType::POSTCOND_ON_SUCCESS), "successpostcond");
+    ASSERT_EQ(node->getPostcondition(FangornPostconditionType::POSTCOND_POST), "postpostcond");
+
+    //test clearing everything
+    node->clearPostcondition(FangornPostconditionType::POSTCOND_ON_FAIL);
+    node->clearPostcondition(FangornPostconditionType::POSTCOND_ON_HALTED);
+    node->clearPostcondition(FangornPostconditionType::POSTCOND_ON_SUCCESS);
+    node->clearPostcondition(FangornPostconditionType::POSTCOND_POST);
+
+    ASSERT_EQ(node->getPostcondition(FangornPostconditionType::POSTCOND_ON_FAIL), "");
+    ASSERT_EQ(node->getPostcondition(FangornPostconditionType::POSTCOND_ON_HALTED), "");
+    ASSERT_EQ(node->getPostcondition(FangornPostconditionType::POSTCOND_ON_SUCCESS), "");
+    ASSERT_EQ(node->getPostcondition(FangornPostconditionType::POSTCOND_POST), "");
+}
+
+
+TEST(FangornBtNodeTest, test_FangornBtNode_regisId_name)
+{
+    FangornBtNode::SharedPtr node = EMPTY_BTNODE("some_rId", "some_name");
+    ASSERT_EQ(node->getRegistrationId(), "some_rId");
+    ASSERT_EQ(node->getName(), "some_name");
+
+    //test setting rId only
+    node->setRegistrationId("some_other_rId");
+    ASSERT_EQ(node->getRegistrationId(), "some_other_rId");
+    ASSERT_EQ(node->getName(), "some_name");
+
+    //test setting name
+    node->setName("another_name");
+    ASSERT_EQ(node->getRegistrationId(), "some_other_rId");
+    ASSERT_EQ(node->getName(), "another_name");
+}
+
+
+TEST(FangornBtNodeTest, test_FangornBtNode_hasNodeInSubtree)
+{
+    const std::string testtree = TESTTREES_LOCATION + "/treeA.xml";
+
+    //create document, locate tree to run
+    QDomDocument doc;
+    doc.setContent(fileToString(QString::fromStdString(testtree)));
+    QDomElement bt = doc.firstChildElement("root").firstChildElement("BehaviorTree");
+
+    ASSERT_FALSE(bt.attribute("ID").isNull());
+    ASSERT_EQ(bt.attribute("ID").toStdString(), "doc1tree1");
+
+    //perform test
+    FangornBtNode::SharedPtr test = std::make_shared<FangornBtNode>(bt);
+    assertChildInSubtreeForSubtree(test, test);
+
+    //perform some false tests
+    ASSERT_FALSE(test->hasNodeInSubtree(EMPTY_BTNODE("NONEXISTENT", "")));
+    ASSERT_FALSE(test->hasNodeInSubtree(EMPTY_BTNODE("another nonexistent", "")));
+    ASSERT_FALSE(test->hasNodeInSubtree(EMPTY_BTNODE("one_more", "nonexistent node")));
 }
