@@ -16,6 +16,8 @@ public:
     FangornMainWindow(QWidget *parent = nullptr);
     ~FangornMainWindow();
 
+    QWidget *getMainPanel();
+
     #if FANGORN_FEATURE_TEST_LABEL == FEATURE_ENABLE
     void setTestLabelText(const std::string& text);
     #endif

@@ -11,18 +11,21 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #-------------------
 # Configure BT.CPP
 #-------------------
-set(buildBtManually true) #TODO evaluate this based on presence of ros2 btcpp pkg
-if(buildBtManually)
-    message(STATUS "No BehaviorTree.CPP found on system. It will build manually.")
-    add_subdirectory(btcpp)
-    set(fangorn_include_dirs ${fangorn_include_dirs} btcpp/include)
-endif()
 
-#-----------------------
-# Configure node editor
-#-----------------------
-add_subdirectory(nodeeditor)
-set(fangorn_include_dirs ${fangorn_include_dirs} nodeeditor/include)
+if(NOT NO_SUBDIRS)
+    set(buildBtManually true) #TODO evaluate this based on presence of ros2 btcpp pkg
+    if(buildBtManually)
+        message(STATUS "No BehaviorTree.CPP found on system. It will build manually.")
+        add_subdirectory(btcpp)
+        set(fangorn_include_dirs ${fangorn_include_dirs} btcpp/include)
+    endif()
+
+    #-----------------------
+    # Configure node editor
+    #-----------------------
+    add_subdirectory(nodeeditor)
+    set(fangorn_include_dirs ${fangorn_include_dirs} nodeeditor/include)
+endif()
 
 #--------------------
 # Configure Fangorn
@@ -37,9 +40,10 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Xml REQUIRED)
 
 file(GLOB view_sources src/fangorn/view/*.cpp)
 file(GLOB view_uis src/fangorn/view/*.ui)
-file(GLOB view_includes include/fangorn/view/*.h)
+file(GLOB view_includes include/fangorn/view/*.hpp)
 file(GLOB control_sources src/fangorn/control/*.cpp)
 file(GLOB model_sources src/fangorn/model/*.cpp)
+file(GLOB plugin_sources src/fangorn/plugin/*.cpp)
 file(GLOB util_sources src/fangorn/util/*.cpp)
 
 set(PROJECT_SOURCES
@@ -49,6 +53,7 @@ set(PROJECT_SOURCES
     ${view_includes}
     ${control_sources}
     ${model_sources}
+    ${plugin_sources}
     ${util_sources}
 )
 
@@ -70,15 +75,14 @@ target_include_directories(fangorn_lib PUBLIC
 #
 target_link_libraries(fangorn_lib PUBLIC Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Xml)
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(Fangorn
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-    )
-
 #
 # FANGORN EXECUTABLE
 #
+if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+    qt_add_executable(Fangorn
+        MANUAL_FINALIZATION
+        src/fangorn/main.cpp
+    )
 
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Fangorn APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -91,7 +95,11 @@ else()
 endif()
 
 #link library to executable
-target_link_libraries(Fangorn PUBLIC fangorn_lib behaviortree_cpp QtNodes)
+target_link_libraries(Fangorn PUBLIC fangorn_lib)
+
+if(NOT NO_SUBDIRS)
+    target_link_libraries(Fangorn PUBLIC behaviortree_cpp QtNodes)
+endif()
 
 set_target_properties(Fangorn PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

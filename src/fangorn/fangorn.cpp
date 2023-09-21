@@ -1,7 +1,22 @@
 #include "fangorn/fangorncommon.hpp"
-#include "fangorn/view/fangornmainwindow.h"
+#include "fangorn/control/fangorncontroller.hpp"
+#include "fangorn/plugin/fangornmanager.hpp"
 #include <unistd.h>
-#include <QApplication>
+
+
+class ExampleController : public FangornController {
+    public:
+    DEF_SMART_PTR_TYPES(ExampleController);
+    ExampleController(FangornView::SharedPtr context)
+     : FangornController() { };
+};
+
+
+template<typename T>
+void printType()
+{
+    FANGORN_INFO("%s", typeid(T).name());
+}
 
 
 int runFangorn(int argc, char **argv)
@@ -19,8 +34,12 @@ int runFangorn(int argc, char **argv)
         }
     #endif
 
-    QApplication a(argc, argv);
-    FangornMainWindow w;
-    w.show();
-    return a.exec();
+    FangornPlugin plugin = FANGORN_CREATE_PLUGIN(
+        FANGORN_PACKAGE_CONTROLLER(ExampleController)
+    );
+
+    FangornManager manager;
+    manager.registerPlugin(plugin);
+    manager.start<ExampleController>(argc, argv);
+    return 0;
 }

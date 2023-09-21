@@ -4,11 +4,11 @@
 #include "fangorn/model/fangornbtnode.hpp"
 #include "fangorn/model/fangornforest.hpp"
 
-struct FangornBTNodeModel {
-    BT::NodeType type;
-    std::string registrationId;
-    BT::PortsList ports;
-};
+// struct FangornBTNodeModel {
+//     BT::NodeType type;
+//     std::string registrationId;
+//     BT::PortsList ports;
+// };
 
 class FangornBtDocument : public FangornForestItem {
     public:

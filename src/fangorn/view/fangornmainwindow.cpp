@@ -1,5 +1,5 @@
 #include <QResizeEvent>
-#include "fangorn/view/fangornmainwindow.h"
+#include "fangorn/view/fangornmainwindow.hpp"
 #include "./ui_fangornmainwindow.h"
 
 using namespace std::placeholders;
@@ -21,6 +21,12 @@ FangornMainWindow::FangornMainWindow(QWidget *parent)
 FangornMainWindow::~FangornMainWindow()
 {
     delete ui;
+}
+
+
+QWidget *FangornMainWindow::getMainPanel()
+{
+    return ui->mainPanel;
 }
 
 

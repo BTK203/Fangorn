@@ -1,5 +1,6 @@
 #pragma once
 #include "fangorn/fangornbase.hpp"
+#include <cstring>
 
 
 //
