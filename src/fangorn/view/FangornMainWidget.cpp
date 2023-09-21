@@ -5,7 +5,7 @@ FangornMainWidget::FangornMainWidget(QWidget *parent)
  : FangornView(parent),
    ui(new Ui::FangornMainWidget)
 {
-  ui->setupUi(this);
+    ui->setupUi(this);
 }
 
 FangornMainWidget::~FangornMainWidget()

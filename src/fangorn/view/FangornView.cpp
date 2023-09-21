@@ -1,7 +1,8 @@
 #include "fangorn/view/fangornview.hpp"
 
 FangornView::FangornView(QWidget *parent)
- : QWidget(parent) { }
+ : QWidget(parent)
+{ }
 
 
 bool FangornView::hasResource(unsigned int resourceId) const

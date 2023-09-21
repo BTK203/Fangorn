@@ -5,6 +5,12 @@ FangornController::FangornController()
 {
 }
 
+
+FangornView::SharedPtr FangornController::getView()
+{
+    return view;
+}
+
     
 void FangornController::initialize(const std::string& dep, FangornView::SharedPtr context)
 {

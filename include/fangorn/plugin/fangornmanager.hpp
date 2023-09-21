@@ -5,6 +5,7 @@
 #include "fangorn/view/fangornmainwidget.hpp"
 #include "fangorn/control/fangorngenericcontroller.hpp"
 #include <QApplication>
+#include <QLayout>
 
 #define FANGORN_CREATE_PLUGIN(...) { __VA_ARGS__ }
 #define FANGORN_PACKAGE_CONTROLLER(type) \
@@ -51,13 +52,25 @@ class FangornManager {
         
         QApplication a(argc, argv);
         FangornMainWindow mw;
+
+
+        // initializedControllers.insert({ "mainwindow",
+        //     std::make_shared<FangornGenericController<FangornMainWidget>>(mw.getMainPanel())
+        // });
+
+        // mw.getMainPanel()->layout()->addWidget(initializedControllers["mainwindow"]->getView());
+
+        std::map<std::string, FangornController::SharedPtr> initializedControllers;
+
         FangornController::SharedPtr cnt = std::make_shared<FangornGenericController<FangornMainWidget>>(mw.getMainPanel());
-        // initializedControllers.push_back(cnt); //causes double free or corruption on exit
+        mw.getMainPanel()->layout()->addWidget(cnt->getView().get());
+        initializedControllers["mainwindow"] = cnt;
+        
         mw.show();
-        return a.exec();
+        int result = a.exec();
+        return result;
     }
 
     private:
     std::list<FangornPlugin> plugins;
-    std::list<FangornController::SharedPtr> initializedControllers;
 };
