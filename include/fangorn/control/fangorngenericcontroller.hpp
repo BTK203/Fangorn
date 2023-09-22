@@ -14,9 +14,4 @@ class FangornGenericController : public FangornController {
 
     void initialize(const std::string& dep, FangornView::SharedPtr context) override
     { }
-
-    std::list<std::string> dependencies() override
-    {
-        return {};
-    }
 };

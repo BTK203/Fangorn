@@ -18,7 +18,7 @@ void FangornController::initialize(const std::string& dep, FangornView::SharedPt
 }
 
 
-std::list<std::string> FangornController::dependencies()
+std::vector<std::string> FangornController::dependencies()
 {
     FANGORN_WARN("FangornController dependencies() function not overridden. Override me!");
     return {};

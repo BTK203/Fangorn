@@ -43,3 +43,32 @@ QString fileToString(const QString& path)
     FANGORN_WARN("File %s requested but doesnt exist!");
     return "";
 }
+
+
+std::string fileToString(const std::string& path)
+{
+    return fileToString(QString::fromStdString(path)).toStdString();
+}
+
+
+QDomDocument fileToDocument(const QString& path)
+{
+    QString fileContent = fileToString(path);
+    
+    //try to parse as XML
+    QDomDocument doc;
+    int errLine;
+    QString errMsg;
+    if(!doc.setContent(fileContent, &errMsg, &errLine))
+    {
+        throw FangornXmlError(errLine, errMsg.toStdString());
+    }
+
+    return doc;
+}
+
+
+QDomDocument fileToDocument(const std::string& path)
+{
+    return fileToDocument(QString::fromStdString(path));
+}

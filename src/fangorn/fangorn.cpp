@@ -3,22 +3,6 @@
 #include "fangorn/plugin/fangornmanager.hpp"
 #include <unistd.h>
 
-
-class ExampleController : public FangornController {
-    public:
-    DEF_SMART_PTR_TYPES(ExampleController);
-    ExampleController(FangornView::SharedPtr context)
-     : FangornController() { };
-};
-
-
-template<typename T>
-void printType()
-{
-    FANGORN_INFO("%s", typeid(T).name());
-}
-
-
 int runFangorn(int argc, char **argv)
 {
     #if FANGORN_FEATURE_TESTFLAG == FEATURE_ENABLE
@@ -34,12 +18,8 @@ int runFangorn(int argc, char **argv)
         }
     #endif
 
-    FangornPlugin plugin = FANGORN_CREATE_PLUGIN(
-        FANGORN_PACKAGE_CONTROLLER(ExampleController)
-    );
-
-    FangornManager manager;
-    manager.registerPlugin(plugin);
-    manager.start<ExampleController>(argc, argv);
+    // FangornManager manager;
+    // manager.registerPlugin(plugin);
+    // manager.start<ExampleController>(argc, argv);
     return 0;
 }

@@ -9,11 +9,10 @@ class FangornController {
     DEF_SMART_PTR_TYPES(FangornController);
     FangornController();
     
+    static std::vector<std::string> dependencies();
     FangornView::SharedPtr getView();
 
     virtual void initialize(const std::string& dep, FangornView::SharedPtr context);
-    virtual std::list<std::string> dependencies();
-
 
     protected:
     FangornView::SharedPtr view;
